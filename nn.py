@@ -7,7 +7,7 @@ http://neuralnetworksanddeeplearning.com
 This project was done to help teach me more about neural networks, and I tried to create guts of the functions in NN
 with as little help as possible, only using outside resources when stuck for a while.
 
-This will most likely be about 100 steps away from being efficient
+This will most likely be about 100 steps away from being efficient.
 """
 
 import numpy as np
