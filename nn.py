@@ -69,15 +69,18 @@ class NN:
         for i in range(0, len(self.sizes) - 1):
             workingMat = np.matmul(self.weights[i], workingMat)
             workingMat = np.add(workingMat, self.biases[i])
-            if self.activation_function == 'sigmoid':
-                workingMat = sigmoid(workingMat)
+            if self.activation_function == 'reLU':
+                workingMat = reLU(workingMat)
             elif self.activation_function == 'tanh':
                 workingMat = tanh(workingMat)
             else:
-                workingMat = reLU(workingMat)
+                workingMat = sigmoid(workingMat)
         return workingMat
 
-    def stochastic_gradient_descent(self):
+    def update_mini_batch(self, mini_batch, eta):
+        pass
+
+    def stochastic_gradient_descent(self, training_data, test_data = None):
         pass
 
     def evaluate(self, outputLayer, expectedOutput):
