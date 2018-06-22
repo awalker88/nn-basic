@@ -5,36 +5,43 @@ This is mostly a recreation of the network found in Neural Networks and Deep Lea
 http://neuralnetworksanddeeplearning.com
 
 This project was done to help teach me more about neural networks, and I tried to create guts of the functions in NN
-with as little help as possible, only using outside resources when stuck for a while.
+with as little help as possible, only using outside resources when stuck for a while. Formatted MNIST data from
+https://pjreddie.com/projects/mnist-in-csv/
 
-This will most likely be about 100 steps away from being efficient.
+This will likely be about 100 steps away from being efficient.
 """
+
 
 import numpy as np
 import random
 import math
 import time
-import pandas as pd
 
 debug = False
+prints = True
+
 
 def main():
     start = time.clock()
-    sizes = [2,3,2]
+    sizes = [2, 3, 2]
     testInput = np.random.rand(sizes[0], 1)
     nn = NN(sizes)
     if debug:
         testInput = np.arange(1, 2)
         nn.weights = np.array([[2], [3]])
-        nn.biases =  np.array([[3], [2]])
-        print(testInput)
-        print(nn.weights)
-        print(nn.biases)
-
-        print(nn.feed_forward(testInput))
+        nn.biases = np.array([[3], [2]])
+    elif prints:
+        print("Test Input:\n", testInput)
+        print("Weights:\n", nn.weights)
+        print("Biases: \n", nn.biases)
+        print("Output:\n", nn.feed_forward(testInput))
 
     end = time.clock()
-    print("\nSeconds to execute: ", end - start)
+    if end - start < 0.001:
+        print("Seconds to execute: really small")
+    else:
+        print("Seconds to execute: ", end - start)
+    print(nn.evaluate(np.array([[0.4, 0.4, 0.4]]), np.array([[1.0, 1.0, 1.0]])))
 
 class NN:
     """ Basic neural network with customizable layer sizes """
@@ -74,12 +81,17 @@ class NN:
         pass
 
     def evaluate(self, outputLayer, expectedOutput):
+        cost = 0
         # simple quadratic cost function
         if self.cost_function == 'quadratic':
             difference = np.subtract(expectedOutput, outputLayer)
+            return difference
         # cross-entropy cost function (I'll admit I don't fully understand this yet)
         else:
             pass
+
+    def backpropagation(self, x, y):
+        pass
 
 
 def sigmoid(x):

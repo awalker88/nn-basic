@@ -49,11 +49,11 @@ def load_data_wrapper():
     In particular, ``training_data`` is a list containing 50,000
     2-tuples ``(x, y)``.  ``x`` is a 784-dimensional numpy.ndarray
     containing the input image.  ``y`` is a 10-dimensional
-    numpy.ndarray representing the unit vector corresponding to the
+    numpy. ndarray representing the unit vector corresponding to the
     correct digit for ``x``.
     ``validation_data`` and ``test_data`` are lists containing 10,000
     2-tuples ``(x, y)``.  In each case, ``x`` is a 784-dimensional
-    numpy.ndarry containing the input image, and ``y`` is the
+    numpy. ndarry containing the input image, and ``y`` is the
     corresponding classification, i.e., the digit values (integers)
     corresponding to ``x``.
     Obviously, this means we're using slightly different formats for
