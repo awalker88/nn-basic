@@ -91,6 +91,8 @@ class NN:
                 mini_batches.append(training_data[i:stop])
                 stop = stop + mini_batch_size
             print(mini_batches)
+        for mini_batch in mini_batches:
+            self.update_mini_batch()
 
 
     def update_mini_batch(self, mini_batch, eta):
