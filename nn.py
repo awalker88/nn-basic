@@ -1,6 +1,9 @@
 """
 Name: nn.py
 
+This is my attempt to create a general purpose neural network with the ability to have any desired
+number of layers and neurons
+
 This is mostly a recreation of the network found in Neural Networks and Deep Learning
 http://neuralnetworksanddeeplearning.com
 
@@ -16,9 +19,10 @@ import numpy as np
 import random
 import math
 import time
+from createXORdata import create_data
 
 debug = False
-prints = True
+prints = False
 
 
 def main():
@@ -32,16 +36,16 @@ def main():
         nn.biases = np.array([[3], [2]])
     elif prints:
         print("Test Input:\n", testInput)
-        print("Weights:\n", nn.weights)
-        print("Biases: \n", nn.biases)
-        print("Output:\n", nn.feed_forward(testInput))
+        print("\nWeights:\n", nn.weights)
+        print("\nBiases: \n", nn.biases)
+        print("\nOutput:\n", nn.feed_forward(testInput))
 
+    train = create_data(12)
+    nn.stochastic_gradient_descent(train, 5, 2)
+
+    # time to execute
     end = time.clock()
-    if end - start < 0.001:
-        print("Seconds to execute: really small")
-    else:
-        print("Seconds to execute: ", end - start)
-    print(nn.evaluate(np.array([[0.4, 0.4, 0.4]]), np.array([[1.0, 1.0, 1.0]])))
+    print("Seconds to execute: ", end - start)
 
 class NN:
     """ Basic neural network with customizable layer sizes """
@@ -56,7 +60,7 @@ class NN:
         self.sizes = sizes
         # randomize biases
         self.biases = []
-        for layer in sizes[1:]:  # don't need weights for input layer
+        for layer in sizes[1:]:  # don't need weights for input layer so start at 1
             self.biases.append(np.random.randn(layer, 1))  # for each non-input layer, create a vector filled with
         # randomize weights                                  random values and height equal to the size of the layer
         self.weights = []
@@ -77,23 +81,33 @@ class NN:
                 workingMat = sigmoid(workingMat)
         return workingMat
 
-    def update_mini_batch(self, mini_batch, eta):
-        pass
+    def stochastic_gradient_descent(self, training_data, mini_batch_size, epochs, eta = 3, test_data=None):
+        trainingSize = len(training_data)
+        for epoch in range(epochs):
+            random.shuffle(training_data)
+            mini_batches = []
+            stop = mini_batch_size
+            for i in range(0,trainingSize, mini_batch_size):
+                mini_batches.append(training_data[i:stop])
+                stop = stop + mini_batch_size
+            print(mini_batches)
 
-    def stochastic_gradient_descent(self, training_data, test_data = None):
+
+    def update_mini_batch(self, mini_batch, eta):
+        """Calculates the partial derivatives for a given mini-batch and applies gradient descent
+        to each mini batch. Then it updates nn's weights and biases
+        PARAMETERS:
+            mini_batch:
+            eta: learning rate
+            """
+        # create
         pass
 
     def evaluate(self, outputLayer, expectedOutput):
-        cost = 0
-        # simple quadratic cost function
-        if self.cost_function == 'quadratic':
-            difference = np.subtract(expectedOutput, outputLayer)
-            return difference
-        # cross-entropy cost function (I'll admit I don't fully understand this yet)
-        else:
-            pass
+        pass
 
     def backpropagation(self, x, y):
+        # create
         pass
 
 
