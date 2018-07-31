@@ -15,8 +15,7 @@ def create_data(numberOfSamples):
             z = 0
         output.append((x,y,z))
         toWrite += str(x) + ', ' + str(y) + ', ' + str(z) + '\n'
-    xorData.write(toWrite)
     return(output)
 
-create_data(10)
+
 
