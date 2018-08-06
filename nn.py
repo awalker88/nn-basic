@@ -10,8 +10,6 @@ http://neuralnetworksanddeeplearning.com
 This project was done to help teach me more about neural networks, and I tried to create guts of the functions in NN
 with as little help as possible, only using outside resources when stuck for a while. Formatted MNIST data from
 https://pjreddie.com/projects/mnist-in-csv/
-
-This will likely be about 100 steps away from being efficient.
 """
 
 
@@ -20,13 +18,14 @@ import random
 import math
 import time
 from createXORdata import create_data
+from mnist_loader import mnist_loader
 
 debug = False
 prints = False
-
+start = time.clock()
 
 def main():
-    start = time.clock()
+
     sizes = [2, 3, 2]
     testInput = np.random.rand(sizes[0], 1)
     nn = NN(sizes)
@@ -40,12 +39,9 @@ def main():
         print("\nBiases: \n", nn.biases)
         print("\nOutput:\n", nn.feed_forward(testInput))
 
-    train = create_data(12)
-    nn.stochastic_gradient_descent(train, 5, 2)
+    realInput = mnist_loader('emnist/mnist_test.csv')
 
-    # time to execute
-    end = time.clock()
-    print("Seconds to execute: ", end - start)
+    nn.backpropagate(1,2)
 
 class NN:
     """ Basic neural network with customizable layer sizes """
@@ -82,44 +78,66 @@ class NN:
         return workingMat
 
     def stochastic_gradient_descent(self, training_data, mini_batch_size, epochs, eta = 3, test_data=None):
+        """Creates mini batches of our training data so that we can backpropagate in mini-steps
+            PARAMETERS:
+                 training_data: list of tuples that contain the training data
+                 mini_batch_size: int that determines the size of a mini_batch
+                 epochs: int that determines how many times to go through the whole training data set
+                 eta: int that determines the learning rate in our cost function
+            RETURNS:
+                 Nothing"""
         trainingSize = len(training_data)
         for epoch in range(epochs):
             random.shuffle(training_data)
             mini_batches = []
             stop = mini_batch_size
+            # splits training data into chunks for use by update_mini_batch
             for i in range(0,trainingSize, mini_batch_size):
                 mini_batches.append(training_data[i:stop])
                 stop = stop + mini_batch_size
-            print(mini_batches)
-        for mini_batch in mini_batches:
-            self.update_mini_batch()
+            for mini_batch in mini_batches:
+                self.update_mini_batch(mini_batch, eta)
+            print("Epoch:",epoch)
 
 
     def update_mini_batch(self, mini_batch, eta):
-        """Calculates the partial derivatives for a given mini-batch and applies gradient descent
-        to each mini batch. Then it updates nn's weights and biases
+        """Uses gradient given by backpropagate to update nn's weights and biases
         PARAMETERS:
             mini_batch:
             eta: learning rate
             """
-        # create
         pass
 
-    def evaluate(self, outputLayer, expectedOutput):
+    def evaluate(self):
+        "Determines how well the network performed on each epoch"
         pass
 
-    def backpropagation(self, x, y):
-        # create
-        pass
+    def backpropagate(self, x, y):
+        """backpropagates
+        PARAMETERS:
+            x: 1d array of inputs for the input array
+            y: 1d array of the expected output"""
+
+        # create new empty arrays to hold the differences we will subtract from our net's weights and biases
+        nabla_b = [np.zeros(b.shape) for b in self.biases]
+        nabla_w = [np.zeros(b.shape) for b in self.biases]
+
+        # create empty matrix to hold activations from all layers
+
+        #
+        for b, w in zip(self.biases, self.weights):
+            print(b, w)
 
 
+# Helper Functions
 def sigmoid(x):
     return 1.0 / (1.0 + np.exp(-x))
 
+def dsigmoid(x):
+    return (sigmoid(x)*(1-sigmoid(x)))
 
 def tanh(x):
     return (math.exp(x) - math.exp(-x)) / (math.exp(x) + math.exp(-x))
-
 
 def reLU(x):
     return max(0, x)
@@ -127,3 +145,5 @@ def reLU(x):
 
 main()
 
+end = time.clock()
+print("Seconds to execute: ", end - start)

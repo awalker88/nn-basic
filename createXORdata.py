@@ -3,7 +3,6 @@
 import random
 
 def create_data(numberOfSamples):
-    xorData = open("xorData.csv", "w")
     output = []
     toWrite = ""
     for i in range(numberOfSamples):
