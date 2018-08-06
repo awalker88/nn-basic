@@ -2,7 +2,7 @@
 Name: nn.py
 
 This is my attempt to create a general purpose neural network with the ability to have any desired
-number of layers and neurons
+number of layers and neurons.
 
 This is mostly a recreation of the network found in Neural Networks and Deep Learning
 http://neuralnetworksanddeeplearning.com
@@ -124,23 +124,39 @@ class NN:
 
         # create empty matrix to hold activations from all layers
 
-        #
-        for b, w in zip(self.biases, self.weights):
-            print(b, w)
+        # 1. Set input layer l = 1
+        # 2. Forward propagate l=2,3,...,L
+        # 3. Calculate error in output layer L using gradient and d_activation function
+        # 4. Backpropagate through layers L-1, L-2,...,2
+        # 5. Output gradient of cost function for weights and biases
+
+
 
 
 # Helper Functions
 def sigmoid(x):
     return 1.0 / (1.0 + np.exp(-x))
 
-def dsigmoid(x):
+def d_sigmoid(x):
     return (sigmoid(x)*(1-sigmoid(x)))
 
 def tanh(x):
     return (math.exp(x) - math.exp(-x)) / (math.exp(x) + math.exp(-x))
 
+def d_tanh(x):
+    return 1.0 - np.tanh(x)**2
+
 def reLU(x):
     return max(0, x)
+
+def d_reLU(x):
+    if x < 0:
+        return 0
+    elif x == 0:
+        return (0.5) # this is an arbitrary choice since reLU is not differentiable at 0
+    else:
+        return 1
+
 
 
 main()
