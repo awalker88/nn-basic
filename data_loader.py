@@ -1,6 +1,6 @@
 import numpy as np
 
-def mnist_loader(filename):
+def data_loader(filename):
     """ imports mnist csv file and outputs list of tuples (pixels, label), where pixels is a column numpy array and label is the
      label of what character the image actually is
      PARAMETERS:

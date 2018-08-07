@@ -17,8 +17,8 @@ import numpy as np
 import random
 import math
 import time
-from createXORdata import create_data
-from mnist_loader import mnist_loader
+import createXORdata as xor
+from data_loader import data_loader
 
 debug = False
 prints = False
@@ -39,7 +39,7 @@ def main():
         print("\nBiases: \n", nn.biases)
         print("\nOutput:\n", nn.feed_forward(testInput))
 
-    realInput = mnist_loader('emnist/mnist_test.csv')
+    realInput = data_loader('emnist/mnist_test.csv')
 
     nn.backpropagate(1,2)
 
@@ -113,22 +113,44 @@ class NN:
         pass
 
     def backpropagate(self, x, y):
-        """backpropagates
+        """backpropagates a single training example's error
         PARAMETERS:
             x: 1d array of inputs for the input array
             y: 1d array of the expected output"""
 
         # create new empty arrays to hold the differences we will subtract from our net's weights and biases
-        nabla_b = [np.zeros(b.shape) for b in self.biases]
-        nabla_w = [np.zeros(b.shape) for b in self.biases]
+        nabla_b = []
+        for b in self.biases:
+            nabla_b.append(np.zeros(b.shape))
+        nabla_w = []
+        for w in self.weights:
+            nabla_w.append(np.zeros(w.shape))
 
-        # create empty matrix to hold activations from all layers
+        zs = []  # list to store all the z vectors, layer by layer
+        ## 1. Set input layer (l = 1)
+        activation = x
+        ## 2. Forward propagate (l=2,3,...,L)
+        activations = [x]  # list to store all the activations, layer by layer (l=2,3,...,L)
+        for b, w in zip(self.biases, self.weights):
+            z = np.dot(w, activation) + b
+            zs.append(z)
+            activation = sigmoid(z)
+            activations.append(activation)
+            print("Activation:", activation)
+        ## 3. Calculate error in output layer L using gradient and d_activation function and add to nablas
+        output = activations[-1]
+        if self.cost_function == 'quadratic':
+            d_cost = np.subtract(output, y)
+        elif self.cost_function == 'cross_entropy':
+            d_cost = None
+        d_activation = d_sigmoid(zs[-1])
+        error = np.dot(d_cost, d_activation)
+        nabla_b[-1] = error
+        nabla_w[-1] = np.dot(error, activations[-2].transpose())
+        ## 4. Backpropagate through layers L-1, L-2,...,2
+        ## 5. Output gradient of cost function for weights and biases
 
-        # 1. Set input layer l = 1
-        # 2. Forward propagate l=2,3,...,L
-        # 3. Calculate error in output layer L using gradient and d_activation function
-        # 4. Backpropagate through layers L-1, L-2,...,2
-        # 5. Output gradient of cost function for weights and biases
+
 
 
 
