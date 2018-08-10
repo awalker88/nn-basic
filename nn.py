@@ -1,7 +1,7 @@
 """
 Name: nn.py
 
-This is my attempt to create a general purpose neural network with the ability to have any desired
+This is my attempt to create a neural network with the ability to have any desired
 number of layers and neurons.
 
 This is mostly a recreation of the network found in Neural Networks and Deep Learning
