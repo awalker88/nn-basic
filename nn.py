@@ -11,24 +11,21 @@ This project was done to help teach me more about neural networks, and I tried t
 with as little help as possible, only using outside resources when stuck for a while. Formatted MNIST data from
 https://pjreddie.com/projects/mnist-in-csv/
 """
-from typing import List, Tuple, Union
 
-import numpy as np
-import random
 import math
+import random
 import time
 
-from numpy.core.multiarray import ndarray
+import numpy as np
 
-import createXORdata as xor
 from data_loader import data_loader
 
 debug = False
 prints = False
 start = time.clock()
 
-def main():
 
+def main():
     sizes = [2, 7, 3]
     testInput = np.random.rand(sizes[0], 1)
     nn = NN(sizes)
@@ -44,10 +41,12 @@ def main():
 
     realInput = data_loader('emnist/mnist_test.csv')
 
-    nn.backpropagate(np.array([[0],[1]]),np.array([[1],[0],[1]]))
+    nn.backpropagate(np.array([[0], [1]]), np.array([[1], [0], [1]]))
+
 
 class NN:
     """ Basic neural network with customizable layer sizes """
+
     def __init__(self, sizes, activation_function='sigmoid', cost_function='quadratic'):
         # Sizes is a list, where each element is the number of neurons in its layer (ex. [3,16,16,5]
         # the length of the list, then, is the number of layers in the network
@@ -80,7 +79,7 @@ class NN:
                 workingMat = sigmoid(workingMat)
         return workingMat
 
-    def stochastic_gradient_descent(self, training_data, mini_batch_size, epochs, eta = 3, test_data=None):
+    def stochastic_gradient_descent(self, training_data, mini_batch_size, epochs, eta=3, test_data=None):
         """Creates mini batches of our training data so that we can backpropagate in mini-steps
             PARAMETERS:
                  training_data: list of tuples that contain the training data
@@ -95,13 +94,12 @@ class NN:
             mini_batches = []
             stop = mini_batch_size
             # splits training data into chunks for use by update_mini_batch
-            for i in range(0,trainingSize, mini_batch_size):
+            for i in range(0, trainingSize, mini_batch_size):
                 mini_batches.append(training_data[i:stop])
                 stop = stop + mini_batch_size
             for mini_batch in mini_batches:
                 self.update_mini_batch(mini_batch, eta)
-            print("Epoch:",epoch)
-
+            print("Epoch:", epoch)
 
     def update_mini_batch(self, mini_batch, eta):
         """Uses gradient given by backpropagate to update nn's weights and biases
@@ -111,9 +109,12 @@ class NN:
             """
         # 1. Create empty matrices nabla_b and nabla_w to hold the sum of the gradients given by backprop
 
+        # 2. For each training example in mini-batch, backprop and collect the example's gradient
+
+        # 3. Average the gradients by m (size of mini-batch), multiply it by the learning rate, then subtract from w and b
 
     def evaluate(self):
-        "Determines how well the network performed on each epoch"
+        """"Determines how well the network performed on each epoch"""
         pass
 
     def backpropagate(self, x, y):
@@ -156,7 +157,7 @@ class NN:
         nabla_w[-1] = np.dot(error, activations[-2].transpose())
         ## 4. Backpropagate through layers L-1, L-2,...,2
         for layer in range(self.num_of_layers - 2, 0, -1):
-            error = np.dot(self.weights[layer].transpose(), error) * d_sigmoid(zs[layer -1])
+            error = np.dot(self.weights[layer].transpose(), error) * d_sigmoid(zs[layer - 1])
             nabla_b[layer - 1] = error
             nabla_w[layer - 1] = np.dot(activations[layer - 1], error.transpose())
 
@@ -165,33 +166,34 @@ class NN:
         return nablas
 
 
-
-
-
 # Helper Functions
 def sigmoid(x):
     return 1.0 / (1.0 + np.exp(-x))
 
+
 def d_sigmoid(x):
-    return sigmoid(x)*(1-sigmoid(x))
+    return sigmoid(x) * (1 - sigmoid(x))
+
 
 def tanh(x):
     return (math.exp(x) - math.exp(-x)) / (math.exp(x) + math.exp(-x))
 
+
 def d_tanh(x):
-    return 1.0 - np.tanh(x)**2
+    return 1.0 - np.tanh(x) ** 2
+
 
 def reLU(x):
     return max(0, x)
+
 
 def d_reLU(x):
     if x < 0:
         return 0
     elif x == 0:
-        return (0.5) # this is an arbitrary choice since reLU is not differentiable at 0
+        return 0.5  # this is an arbitrary choice since reLU is not differentiable at 0
     else:
         return 1
-
 
 
 main()
