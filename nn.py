@@ -11,12 +11,15 @@ This project was done to help teach me more about neural networks, and I tried t
 with as little help as possible, only using outside resources when stuck for a while. Formatted MNIST data from
 https://pjreddie.com/projects/mnist-in-csv/
 """
-
+from typing import List, Tuple, Union
 
 import numpy as np
 import random
 import math
 import time
+
+from numpy.core.multiarray import ndarray
+
 import createXORdata as xor
 from data_loader import data_loader
 
@@ -26,7 +29,7 @@ start = time.clock()
 
 def main():
 
-    sizes = [2, 3, 2]
+    sizes = [2, 7, 3]
     testInput = np.random.rand(sizes[0], 1)
     nn = NN(sizes)
     if debug:
@@ -41,7 +44,7 @@ def main():
 
     realInput = data_loader('emnist/mnist_test.csv')
 
-    nn.backpropagate(1,2)
+    nn.backpropagate(np.array([[0],[1]]),np.array([[1],[0],[1]]))
 
 class NN:
     """ Basic neural network with customizable layer sizes """
@@ -106,7 +109,8 @@ class NN:
             mini_batch:
             eta: learning rate
             """
-        pass
+        # 1. Create empty matrices nabla_b and nabla_w to hold the sum of the gradients given by backprop
+
 
     def evaluate(self):
         "Determines how well the network performed on each epoch"
@@ -116,9 +120,10 @@ class NN:
         """backpropagates a single training example's error
         PARAMETERS:
             x: 1d array of inputs for the input array
-            y: 1d array of the expected output"""
-
-        # create new empty arrays to hold the differences we will subtract from our net's weights and biases
+            y: 1d array of the expected output
+            """
+        # creates empty arrays with same dimensions as self.weights and self.biases to hold the differences
+        # we will subtract from our net's weights and biases
         nabla_b = []
         for b in self.biases:
             nabla_b.append(np.zeros(b.shape))
@@ -143,13 +148,21 @@ class NN:
             d_cost = np.subtract(output, y)
         elif self.cost_function == 'cross_entropy':
             d_cost = None
+        else:
+            d_cost = None
         d_activation = d_sigmoid(zs[-1])
-        error = np.dot(d_cost, d_activation)
+        error = d_cost * d_activation
         nabla_b[-1] = error
         nabla_w[-1] = np.dot(error, activations[-2].transpose())
         ## 4. Backpropagate through layers L-1, L-2,...,2
-        ## 5. Output gradient of cost function for weights and biases
+        for layer in range(self.num_of_layers - 2, 0, -1):
+            error = np.dot(self.weights[layer].transpose(), error) * d_sigmoid(zs[layer -1])
+            nabla_b[layer - 1] = error
+            nabla_w[layer - 1] = np.dot(activations[layer - 1], error.transpose())
 
+        ## 5. Output gradient of cost function for weights and biases
+        nablas = (nabla_b, nabla_w)
+        return nablas
 
 
 
@@ -160,7 +173,7 @@ def sigmoid(x):
     return 1.0 / (1.0 + np.exp(-x))
 
 def d_sigmoid(x):
-    return (sigmoid(x)*(1-sigmoid(x)))
+    return sigmoid(x)*(1-sigmoid(x))
 
 def tanh(x):
     return (math.exp(x) - math.exp(-x)) / (math.exp(x) + math.exp(-x))
