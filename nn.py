@@ -26,22 +26,14 @@ start = time.clock()
 
 
 def main():
-    sizes = [2, 7, 3]
-    testInput = np.random.rand(sizes[0], 1)
+    sizes = [784, 16, 10]
     nn = NN(sizes)
-    if debug:
-        testInput = np.arange(1, 2)
-        nn.weights = np.array([[2], [3]])
-        nn.biases = np.array([[3], [2]])
-    elif prints:
-        print("Test Input:\n", testInput)
-        print("\nWeights:\n", nn.weights)
-        print("\nBiases: \n", nn.biases)
-        print("\nOutput:\n", nn.feed_forward(testInput))
 
-    realInput = data_loader('emnist/mnist_test.csv')
+    trainData = data_loader('emnist/mnist_test.csv')
+    testData = data_loader('emnist/mnist_test.csv')
 
-    nn.backpropagate(np.array([[0], [1]]), np.array([[1], [0], [1]]))
+    nn.stochastic_gradient_descent(testData, 100, 1)
+
 
 
 class NN:
@@ -104,18 +96,32 @@ class NN:
     def update_mini_batch(self, mini_batch, eta):
         """Uses gradient given by backpropagate to update nn's weights and biases
         PARAMETERS:
-            mini_batch:
+            mini_batch: batch of training examples, where each example is a tuple with the first item being the
+            inputs and the second item being the expected output
             eta: learning rate
             """
         # 1. Create empty matrices nabla_b and nabla_w to hold the sum of the gradients given by backprop
+        nabla_b = []
+        for b in self.biases:
+            nabla_b.append(np.zeros(b.shape))
+        nabla_w = []
+        for w in self.weights:
+            nabla_w.append(np.zeros(w.shape))
 
         # 2. For each training example in mini-batch, backprop and collect the example's gradient
+        for example in mini_batch:
+            nablas = self.backpropagate(example[0], example[1])
+            nabla_b = np.add(nabla_b, nablas[0])
+            nabla_w = np.add(nabla_w, nablas[1])
 
-        # 3. Average the gradients by m (size of mini-batch), multiply it by the learning rate, then subtract from w and b
+        # 3. Average the gradients by size of mini-batch, multiply it by the learning rate, then subtract from w and b
+        nabla_b = (eta / len(mini_batch)) * nabla_b
+        self.biases = np.subtract(self.biases, nabla_b)
+        nabla_w = (eta / len(mini_batch)) * nabla_w
+        self.weights = np.subtract(self.weights, nabla_w)
 
     def evaluate(self):
         """"Determines how well the network performed on each epoch"""
-        pass
 
     def backpropagate(self, x, y):
         """backpropagates a single training example's error
@@ -133,17 +139,18 @@ class NN:
             nabla_w.append(np.zeros(w.shape))
 
         zs = []  # list to store all the z vectors, layer by layer
-        ## 1. Set input layer (l = 1)
+        # 1. Set input layer (l = 1)
         activation = x
-        ## 2. Forward propagate (l=2,3,...,L)
+
+        # 2. Forward propagate (l=2,3,...,L)
         activations = [x]  # list to store all the activations, layer by layer (l=2,3,...,L)
         for b, w in zip(self.biases, self.weights):
             z = np.dot(w, activation) + b
             zs.append(z)
             activation = sigmoid(z)
             activations.append(activation)
-            print("Activation:", activation)
-        ## 3. Calculate error in output layer L using gradient and d_activation function and add to nablas
+
+        # 3. Calculate error in output layer L using gradient and d_activation function and add to nablas
         output = activations[-1]
         if self.cost_function == 'quadratic':
             d_cost = np.subtract(output, y)
@@ -155,13 +162,14 @@ class NN:
         error = d_cost * d_activation
         nabla_b[-1] = error
         nabla_w[-1] = np.dot(error, activations[-2].transpose())
-        ## 4. Backpropagate through layers L-1, L-2,...,2
+
+        # 4. Backpropagate through layers L-1, L-2,...,2
         for layer in range(self.num_of_layers - 2, 0, -1):
             error = np.dot(self.weights[layer].transpose(), error) * d_sigmoid(zs[layer - 1])
             nabla_b[layer - 1] = error
             nabla_w[layer - 1] = np.dot(activations[layer - 1], error.transpose())
 
-        ## 5. Output gradient of cost function for weights and biases
+        # 5. Output gradient of cost function for weights and biases
         nablas = (nabla_b, nabla_w)
         return nablas
 
