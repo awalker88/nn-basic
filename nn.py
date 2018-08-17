@@ -15,8 +15,8 @@ https://pjreddie.com/projects/mnist-in-csv/
 import math
 import random
 import time
-
 import numpy as np
+
 from createXORdata import create_XOR_data
 from data_loader import data_loader
 
@@ -26,7 +26,7 @@ start = time.clock()
 
 
 def main():
-    sizes = [784, 16, 10]
+    sizes = [784, 3, 4, 10]
     nn = NN(sizes)
 
     # emnistTrainData = data_loader('emnist/mnist_test.csv')
@@ -121,28 +121,12 @@ class NN:
             nabla_b = np.add(nabla_b, nablas[0])
             nabla_w = np.add(nabla_w, nablas[1])
 
-        # for x, y in mini_batch:
-        #     delta_nabla_b, delta_nabla_w = self.backpropagate(x, y)
-        #     nabla_b = []
-        #     for nb, dnb in zip(nabla_b, delta_nabla_b):
-        #         nabla_b.append(nb + dnb)
-        #     nabla_w = []
-        #     for nw, dnw in zip(nabla_w, delta_nabla_w):
-        #         nabla_w.append(nw + dnw)
-
         # 3. Average the gradients by size of mini-batch, multiply it by the learning rate, then subtract from w and b
         nabla_b = (eta / len(mini_batch)) * nabla_b
         self.biases = np.subtract(self.biases, nabla_b)
         nabla_w = (eta / len(mini_batch)) * nabla_w
         self.weights = np.subtract(self.weights, nabla_w)
 
-        # self.weights = []
-        # for w, nw in zip(self.weights, nabla_w):
-        #     self.weights.append(w - (eta / len(mini_batch)) * nw)
-        #
-        # self.biases = []
-        # for b, nb in zip(self.weights, nabla_w):
-        #     self.weights.append(b - (eta / len(mini_batch)) * nb)
 
     def evaluate(self, test_data):
         """"Determines how well the network performed on each epoch"""
