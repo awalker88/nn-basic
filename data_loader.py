@@ -21,6 +21,6 @@ def data_loader(filename, number_of_outputs, xOrmnist):
             labelVector[label - 1] = 1.0
         # turn line into column vector
         pixels = np.array([line], dtype=int).transpose()
-        output.append((pixels, labelVector))
+        output.append(pixels, labelVector)
 
     return output
