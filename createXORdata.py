@@ -1,7 +1,7 @@
 """Creates a labeled data set of XOR samples to test a neural network"""
 
 import random
-
+output = []
 def create_XOR_data(numberOfSamples):
     toWrite = ""
     for i in range(numberOfSamples):
@@ -11,8 +11,9 @@ def create_XOR_data(numberOfSamples):
             z = 1
         else:
             z = 0
-        toWrite += str(z) + ', ' + str(x) + ', ' + str(y) + '\n'
-    return toWrite
+        toWrite = str(z) + ', ' + str(x) + ', ' + str(y) + '\n'
+        output.append(toWrite)
+    return output
 
 
 

@@ -23,21 +23,20 @@ from data_loader import data_loader
 debug = False
 prints = False
 start = time.clock()
-
+xOR = False
 
 def main():
-    sizes = [784, 3, 4, 10]
-    nn = NN(sizes)
-
-    # emnistTrainData = data_loader('emnist/mnist_test.csv')
-    emnistTestData = data_loader('emnist/mnist_test.csv', 10, "mnist")
-
-    # file = open("xorData.csv", "w")
-    # file.write(create_XOR_data(1000))
-    #
-    # xorTestData = data_loader('xorData.csv', 2, 'xOr')
-
-    nn.stochastic_gradient_descent(emnistTestData, 100, 10)
+    if xOR:
+        sizes = [2,2,2]
+        nn = NN(sizes)
+        xorTestData = data_loader('xorData.csv', 2, 'xOr')
+        nn.stochastic_gradient_descent(training_data= xorTestData, mini_batch_size= 2, epochs= 20)
+    else:
+        sizes = [784, 30, 10]
+        nn = NN(sizes)
+        # emnistTrainData = data_loader('emnist/mnist_test.csv')
+        emnistTestData = data_loader('emnist/mnist_test.csv', 10, "mnist")
+        nn.stochastic_gradient_descent(training_data= emnistTestData, mini_batch_size=10, epochs= 30)
 
 
 
@@ -76,7 +75,7 @@ class NN:
                 workingMat = sigmoid(workingMat)
         return workingMat
 
-    def stochastic_gradient_descent(self, training_data, mini_batch_size, epochs, eta=3, test_data=None):
+    def stochastic_gradient_descent(self, training_data, mini_batch_size, epochs, eta=2, test_data=None):
         """Creates mini batches of our training data so that we can backpropagate in mini-steps
             PARAMETERS:
                  training_data: list of tuples that contain the training data
@@ -98,7 +97,7 @@ class NN:
             for mini_batch in mini_batches:
                 self.update_mini_batch(mini_batch, eta)
             howdYaDo = self.evaluate(training_data)
-            print("Epoch: %s     Model Correctly Identified %d out of %d examples" % (epoch, howdYaDo[0], howdYaDo[1]))
+            print("Epoch: %s     Model Correctly Identified %d out of %d examples" % (epoch + 1, howdYaDo[0], howdYaDo[1]))
 
     def update_mini_batch(self, mini_batch, eta):
         """Uses gradient given by backpropagate to update nn's weights and biases
@@ -135,7 +134,7 @@ class NN:
         for example in test_data:
             inputLayer = example[0]
             output = np.argmax((self.feed_forward(inputLayer)))
-            if output == example[1]:
+            if output == np.argmax(example[1]):
                 correct += 1
         return (correct, total)
 
