@@ -14,7 +14,7 @@ def data_loader(filename, number_of_outputs, xOrmnist):
         line = line.strip()
         line = line.split(',')
         label = int(line.pop(0))
-        labelVector = np.zeros(number_of_outputs)
+        labelVector = np.zeros([number_of_outputs, 1])
         if xOrmnist == 'xOr':
             labelVector[label] = 1.0
         elif xOrmnist == 'mnist':
