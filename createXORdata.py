@@ -2,8 +2,7 @@
 
 import random
 
-def create_data(numberOfSamples):
-    output = []
+def create_XOR_data(numberOfSamples):
     toWrite = ""
     for i in range(numberOfSamples):
         x = random.choice([0, 1])
@@ -12,9 +11,8 @@ def create_data(numberOfSamples):
             z = 1
         else:
             z = 0
-        output.append((x,y,z))
-        toWrite += str(x) + ', ' + str(y) + ', ' + str(z) + '\n'
-    return(output)
+        toWrite += str(z) + ', ' + str(x) + ', ' + str(y) + '\n'
+    return toWrite
 
 
 

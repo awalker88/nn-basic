@@ -17,7 +17,7 @@ import random
 import time
 
 import numpy as np
-
+from createXORdata import create_XOR_data
 from data_loader import data_loader
 
 debug = False
@@ -29,10 +29,15 @@ def main():
     sizes = [784, 16, 10]
     nn = NN(sizes)
 
-    trainData = data_loader('emnist/mnist_test.csv')
-    testData = data_loader('emnist/mnist_test.csv')
+    # emnistTrainData = data_loader('emnist/mnist_test.csv')
+    emnistTestData = data_loader('emnist/mnist_test.csv', 10, "mnist")
 
-    nn.stochastic_gradient_descent(testData, 100, 1)
+    # file = open("xorData.csv", "w")
+    # file.write(create_XOR_data(1000))
+    #
+    # xorTestData = data_loader('xorData.csv', 2, 'xOr')
+
+    nn.stochastic_gradient_descent(emnistTestData, 100, 10)
 
 
 
@@ -89,9 +94,11 @@ class NN:
             for i in range(0, trainingSize, mini_batch_size):
                 mini_batches.append(training_data[i:stop])
                 stop = stop + mini_batch_size
+            # used gradient descent to update weights and biases by nablas
             for mini_batch in mini_batches:
                 self.update_mini_batch(mini_batch, eta)
-            print("Epoch:", epoch)
+            howdYaDo = self.evaluate(training_data)
+            print("Epoch: %s     Model Correctly Identified %d out of %d examples" % (epoch, howdYaDo[0], howdYaDo[1]))
 
     def update_mini_batch(self, mini_batch, eta):
         """Uses gradient given by backpropagate to update nn's weights and biases
@@ -114,14 +121,40 @@ class NN:
             nabla_b = np.add(nabla_b, nablas[0])
             nabla_w = np.add(nabla_w, nablas[1])
 
+        # for x, y in mini_batch:
+        #     delta_nabla_b, delta_nabla_w = self.backpropagate(x, y)
+        #     nabla_b = []
+        #     for nb, dnb in zip(nabla_b, delta_nabla_b):
+        #         nabla_b.append(nb + dnb)
+        #     nabla_w = []
+        #     for nw, dnw in zip(nabla_w, delta_nabla_w):
+        #         nabla_w.append(nw + dnw)
+
         # 3. Average the gradients by size of mini-batch, multiply it by the learning rate, then subtract from w and b
         nabla_b = (eta / len(mini_batch)) * nabla_b
         self.biases = np.subtract(self.biases, nabla_b)
         nabla_w = (eta / len(mini_batch)) * nabla_w
         self.weights = np.subtract(self.weights, nabla_w)
 
-    def evaluate(self):
+        # self.weights = []
+        # for w, nw in zip(self.weights, nabla_w):
+        #     self.weights.append(w - (eta / len(mini_batch)) * nw)
+        #
+        # self.biases = []
+        # for b, nb in zip(self.weights, nabla_w):
+        #     self.weights.append(b - (eta / len(mini_batch)) * nb)
+
+    def evaluate(self, test_data):
         """"Determines how well the network performed on each epoch"""
+        total = len(test_data)
+        correct = 0
+        for example in test_data:
+            inputLayer = example[0]
+            output = np.argmax((self.feed_forward(inputLayer)))
+            if output == example[1]:
+                correct += 1
+        return (correct, total)
+
 
     def backpropagate(self, x, y):
         """backpropagates a single training example's error
@@ -167,7 +200,7 @@ class NN:
         for layer in range(self.num_of_layers - 2, 0, -1):
             error = np.dot(self.weights[layer].transpose(), error) * d_sigmoid(zs[layer - 1])
             nabla_b[layer - 1] = error
-            nabla_w[layer - 1] = np.dot(activations[layer - 1], error.transpose())
+            nabla_w[layer - 1] = np.dot(error, activations[layer - 1].transpose())
 
         # 5. Output gradient of cost function for weights and biases
         nablas = (nabla_b, nabla_w)
@@ -176,7 +209,10 @@ class NN:
 
 # Helper Functions
 def sigmoid(x):
-    return 1.0 / (1.0 + np.exp(-x))
+    # cuts down on sig figs and helps stop overflow
+    x = np.clip(x, -200, 200)
+    x = 1.0 / (1.0 + np.exp(-x))
+    return x
 
 
 def d_sigmoid(x):
