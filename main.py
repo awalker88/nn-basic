@@ -16,15 +16,17 @@ def main():
         eta = 3
         sizes = [2,2,2]
         nn = NN(sizes)
-        xorTestData = data_loader('xorData.csv', 2, 'xOr')
-        nn.stochastic_gradient_descent(training_data=xorTestData, mini_batch_size=2, epochs=20, learning_rate=eta)
+        xorTestData = data_loader('xorData.csv', 2, "xOr")
+        results = nn.stochastic_gradient_descent(training_data=xorTestData, mini_batch_size=2, epochs=20,
+                                                 learning_rate=eta)
+        epochResults = [item[0] for item in results]
     else:
         sizes = [784, 16, 16, 10]
-        eta = 0.3
+        eta = 0.5
         nn = NN(sizes)
         emnistTestData = data_loader('emnist/mnist_test.csv', 10, "mnist")
-        results = nn.stochastic_gradient_descent(training_data= emnistTestData, mini_batch_size=100, epochs=3,
-                                       learning_rate=eta)
+        results = nn.stochastic_gradient_descent(training_data= emnistTestData, mini_batch_size=10, epochs=30,
+                                                 learning_rate=eta)
         epochResults = [item[0] for item in results]
 
     plt.plot(epochResults)

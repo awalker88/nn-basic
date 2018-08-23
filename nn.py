@@ -110,19 +110,6 @@ class NN:
         nabla_w = (learning_rate / len(mini_batch)) * nabla_w
         self.weights = np.subtract(self.weights, nabla_w)
 
-
-    def evaluate(self, test_data):
-        """"Determines how well the network performed on each epoch"""
-        total = len(test_data)
-        correct = 0
-        for example in test_data:
-            inputLayer = example[0]
-            output = np.argmax((self.feed_forward(inputLayer)))
-            if output == np.argmax(example[1]):
-                correct += 1
-        return (correct, total)
-
-
     def backpropagate(self, x, y):
         """backpropagates a single training example's error
         PARAMETERS:
@@ -153,7 +140,7 @@ class NN:
         # 3. Calculate error in output layer L using gradient and d_activation function and add to nablas
         output = activations[-1]
         if self.cost_function == 'quadratic':
-            d_cost = np.subtract(output, y)
+            d_cost = np.subtract(output - y)
         elif self.cost_function == 'cross_entropy':
             d_cost = None
         else:
@@ -173,6 +160,16 @@ class NN:
         nablas = (nabla_b, nabla_w)
         return nablas
 
+    def evaluate(self, test_data):
+        """"Determines how well the network performed on each epoch"""
+        total = len(test_data)
+        correct = 0
+        for example in test_data:
+            inputLayer = example[0]
+            output = np.argmax((self.feed_forward(inputLayer)))
+            if output == np.argmax(example[1]):
+                correct += 1
+        return (correct, total)
 
 # Helper Functions
 def sigmoid(x):
