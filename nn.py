@@ -14,31 +14,7 @@ https://pjreddie.com/projects/mnist-in-csv/
 
 import math
 import random
-import time
 import numpy as np
-
-from createXORdata import create_XOR_data
-from data_loader import data_loader
-
-debug = False
-prints = False
-start = time.clock()
-xOR = False
-
-def main():
-    if xOR:
-        sizes = [2,2,2]
-        nn = NN(sizes)
-        xorTestData = data_loader('xorData.csv', 2, 'xOr')
-        nn.stochastic_gradient_descent(training_data= xorTestData, mini_batch_size= 2, epochs= 20)
-    else:
-        sizes = [784, 30, 10]
-        nn = NN(sizes)
-        # emnistTrainData = data_loader('emnist/mnist_test.csv')
-        emnistTestData = data_loader('emnist/mnist_test.csv', 10, "mnist")
-        nn.stochastic_gradient_descent(training_data= emnistTestData, mini_batch_size=10, epochs= 30)
-
-
 
 class NN:
     """ Basic neural network with customizable layer sizes """
@@ -75,16 +51,22 @@ class NN:
                 workingMat = sigmoid(workingMat)
         return workingMat
 
-    def stochastic_gradient_descent(self, training_data, mini_batch_size, epochs, eta=2, test_data=None):
+    def stochastic_gradient_descent(self, training_data, mini_batch_size, epochs, learning_rate):
         """Creates mini batches of our training data so that we can backpropagate in mini-steps
             PARAMETERS:
                  training_data: list of tuples that contain the training data
                  mini_batch_size: int that determines the size of a mini_batch
                  epochs: int that determines how many times to go through the whole training data set
-                 eta: int that determines the learning rate in our cost function
+                 learning_rate: int that determines the learning rate in our cost function
             RETURNS:
                  Nothing"""
         trainingSize = len(training_data)
+
+        # Initial performance, before any training
+        howdYaDo = self.evaluate(training_data)
+        print("Model Correctly Identified %d out of %d examples" % (howdYaDo[0], howdYaDo[1]))
+        # track how we did on each epoch
+        results = []
         for epoch in range(epochs):
             random.shuffle(training_data)
             mini_batches = []
@@ -95,16 +77,18 @@ class NN:
                 stop = stop + mini_batch_size
             # used gradient descent to update weights and biases by nablas
             for mini_batch in mini_batches:
-                self.update_mini_batch(mini_batch, eta)
+                self.update_mini_batch(mini_batch, learning_rate)
             howdYaDo = self.evaluate(training_data)
             print("Epoch: %s     Model Correctly Identified %d out of %d examples" % (epoch + 1, howdYaDo[0], howdYaDo[1]))
+            results.append([howdYaDo[0], howdYaDo[1]])
+        return results
 
-    def update_mini_batch(self, mini_batch, eta):
+    def update_mini_batch(self, mini_batch, learning_rate):
         """Uses gradient given by backpropagate to update nn's weights and biases
         PARAMETERS:
             mini_batch: batch of training examples, where each example is a tuple with the first item being the
             inputs and the second item being the expected output
-            eta: learning rate
+            learning_rate: learning rate, float
             """
         # 1. Create empty matrices nabla_b and nabla_w to hold the sum of the gradients given by backprop
         nabla_b = []
@@ -121,9 +105,9 @@ class NN:
             nabla_w = np.add(nabla_w, nablas[1])
 
         # 3. Average the gradients by size of mini-batch, multiply it by the learning rate, then subtract from w and b
-        nabla_b = (eta / len(mini_batch)) * nabla_b
+        nabla_b = (learning_rate / len(mini_batch)) * nabla_b
         self.biases = np.subtract(self.biases, nabla_b)
-        nabla_w = (eta / len(mini_batch)) * nabla_w
+        nabla_w = (learning_rate / len(mini_batch)) * nabla_w
         self.weights = np.subtract(self.weights, nabla_w)
 
 
@@ -193,7 +177,7 @@ class NN:
 # Helper Functions
 def sigmoid(x):
     # cuts down on sig figs and helps stop overflow
-    x = np.clip(x, -200, 200)
+    x = np.clip(x, -400, 400)
     x = 1.0 / (1.0 + np.exp(-x))
     return x
 
@@ -223,7 +207,23 @@ def d_reLU(x):
         return 1
 
 
-main()
+def ce(a, y):
+    """Return the cost associated with an output ``a`` and desired output
+    ``y``.  Note that np.nan_to_num is used to ensure numerical
+    stability.  In particular, if both ``a`` and ``y`` have a 1.0
+    in the same slot, then the expression (1-y)*np.log(1-a)
+    returns nan.  The np.nan_to_num ensures that that is converted
+    to the correct value (0.0).
+    """
+    return np.sum(np.nan_to_num(-y*np.log(a)-(1-y)*np.log(1-a)))
 
-end = time.clock()
-print("Seconds to execute: ", end - start)
+def dce(a, y):
+    """Return the error delta from the output layer.  Note that the
+    parameter ``z`` is not used by the method.  It is included in
+    the method's parameters in order to make the interface
+    consistent with the delta method for other cost classes.
+    """
+    return (a-y)
+
+
+
