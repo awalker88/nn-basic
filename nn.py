@@ -15,6 +15,8 @@ https://pjreddie.com/projects/mnist-in-csv/
 import math
 import random
 import numpy as np
+from scipy.special import expit
+
 
 class NN:
     """ Basic neural network with customizable layer sizes """
@@ -140,7 +142,7 @@ class NN:
         # 3. Calculate error in output layer L using gradient and d_activation function and add to nablas
         output = activations[-1]
         if self.cost_function == 'quadratic':
-            d_cost = np.subtract(output - y)
+            d_cost = np.subtract(output, y)
         elif self.cost_function == 'cross_entropy':
             d_cost = None
         else:
@@ -174,9 +176,7 @@ class NN:
 # Helper Functions
 def sigmoid(x):
     # cuts down on sig figs and helps stop overflow
-    x = np.clip(x, -400, 400)
-    x = 1.0 / (1.0 + np.exp(-x))
-    return x
+    return expit(x)
 
 
 def d_sigmoid(x):
@@ -202,25 +202,3 @@ def d_reLU(x):
         return 0.5  # this is an arbitrary choice since reLU is not differentiable at 0
     else:
         return 1
-
-
-def ce(a, y):
-    """Return the cost associated with an output ``a`` and desired output
-    ``y``.  Note that np.nan_to_num is used to ensure numerical
-    stability.  In particular, if both ``a`` and ``y`` have a 1.0
-    in the same slot, then the expression (1-y)*np.log(1-a)
-    returns nan.  The np.nan_to_num ensures that that is converted
-    to the correct value (0.0).
-    """
-    return np.sum(np.nan_to_num(-y*np.log(a)-(1-y)*np.log(1-a)))
-
-def dce(a, y):
-    """Return the error delta from the output layer.  Note that the
-    parameter ``z`` is not used by the method.  It is included in
-    the method's parameters in order to make the interface
-    consistent with the delta method for other cost classes.
-    """
-    return (a-y)
-
-
-

@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 from nn import NN
 
 xOR = False
+test = False
 start = time.clock()
 
 def main():
@@ -22,10 +23,15 @@ def main():
         epochResults = [item[0] for item in results]
     else:
         sizes = [784, 16, 16, 10]
-        eta = 0.5
+        eta = 3
         nn = NN(sizes)
-        emnistTestData = data_loader('emnist/mnist_test.csv', 10, "mnist")
-        results = nn.stochastic_gradient_descent(training_data= emnistTestData, mini_batch_size=10, epochs=30,
+        import sys
+
+        sys.path.append("../")
+
+        import mnist_loader
+        emnistTestData, validation_data, test_data = mnist_loader.load_data_wrapper() # data_loader('emnist/mnist_test.csv', 10, "mnist")
+        results = nn.stochastic_gradient_descent(training_data=emnistTestData, mini_batch_size=100, epochs=30,
                                                  learning_rate=eta)
         epochResults = [item[0] for item in results]
 
