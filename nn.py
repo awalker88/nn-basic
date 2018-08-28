@@ -24,7 +24,7 @@ class NN:
     def __init__(self, sizes, activation_function='sigmoid', cost_function='quadratic'):
         # Sizes is a list, where each element is the number of neurons in its layer (ex. [3,16,16,5]
         # the length of the list, then, is the number of layers in the network
-        # activation_function can be 'sigmoid', 'tanh' or 'reLU'
+        # activation_function can be 'sigmoid' or 'reLU'
         # cost function can be 'quadratic' or 'crossEntropy'
         self.activation_function = activation_function
         self.cost_function = cost_function
@@ -47,8 +47,6 @@ class NN:
             workingMat = np.add(workingMat, self.biases[i])
             if self.activation_function == 'reLU':
                 workingMat = reLU(workingMat)
-            elif self.activation_function == 'tanh':
-                workingMat = tanh(workingMat)
             else:
                 workingMat = sigmoid(workingMat)
         return workingMat
@@ -136,7 +134,10 @@ class NN:
         for b, w in zip(self.biases, self.weights):
             z = np.dot(w, activation) + b
             zs.append(z)
-            activation = sigmoid(z)
+            if self.activation_function == 'reLU':
+                activation = reLU(z)
+            else:
+                activation = sigmoid(z)
             activations.append(activation)
 
         # 3. Calculate error in output layer L using gradient and d_activation function and add to nablas
@@ -147,14 +148,20 @@ class NN:
             d_cost = None
         else:
             d_cost = None
-        d_activation = d_sigmoid(zs[-1])
+        if self.activation_function == 'reLU':
+            d_activation = d_reLU(zs[-1])
+        else:
+            d_activation = d_sigmoid(zs[-1])
         error = d_cost * d_activation
         nabla_b[-1] = error
         nabla_w[-1] = np.dot(error, activations[-2].transpose())
 
         # 4. Backpropagate through layers L-1, L-2,...,2
         for layer in range(self.num_of_layers - 2, 0, -1):
-            error = np.dot(self.weights[layer].transpose(), error) * d_sigmoid(zs[layer - 1])
+            if self.activation_function == 'reLU':
+                error = np.dot(self.weights[layer].transpose(), error) * d_reLU(zs[layer - 1])
+            else:
+                error = np.dot(self.weights[layer].transpose(), error) * d_sigmoid(zs[layer - 1])
             nabla_b[layer - 1] = error
             nabla_w[layer - 1] = np.dot(error, activations[layer - 1].transpose())
 
@@ -183,22 +190,11 @@ def d_sigmoid(x):
     return sigmoid(x) * (1 - sigmoid(x))
 
 
-def tanh(x):
-    return (math.exp(x) - math.exp(-x)) / (math.exp(x) + math.exp(-x))
-
-
-def d_tanh(x):
-    return 1.0 - np.tanh(x) ** 2
-
-
 def reLU(x):
-    return max(0, x)
+    return np.maximum(0, x)
 
 
 def d_reLU(x):
-    if x < 0:
-        return 0
-    elif x == 0:
-        return 0.5  # this is an arbitrary choice since reLU is not differentiable at 0
-    else:
-        return 1
+    x[x<=0] = 0
+    x[x>0] = 1
+    return x
