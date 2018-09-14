@@ -15,7 +15,7 @@ def main():
     # Parameters
     sizes = [784, 16, 16, 10]
     eta = 3
-    mini_batch_size = 100
+    mini_batch_size = 50
     epochs = 30
 
     nn = NN(sizes)
