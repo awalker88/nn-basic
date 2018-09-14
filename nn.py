@@ -182,7 +182,7 @@ class NN:
 
 # Helper Functions
 def sigmoid(x):
-    # cuts down on sig figs and helps stop overflow
+    # Sigmoid squishification function
     return expit(x)
 
 
