@@ -16,8 +16,6 @@ There are three big parts of the project (four if you include the data set):
 
 **4. mnistData** - pixel values of images we will be classifying, from http://yann.lecun.com/exdb/mnist/
 
-This project requires Python 3, the libraries NumPy and matplotlib, and the mnist data from http://yann.lecun.com/exdb/mnist/. After ensuring the entire project is in the same directory, you only need to run main.py to start training a network with the default settings.
-
 ## Running the Network
 This project requires Python 3, the libraries NumPy and matplotlib, and the mnist data from http://yann.lecun.com/exdb/mnist/. After ensuring the entire project is in the same directory, you only need to run main.py to start training a network with the default settings. Although this was built around the problem of classifying handwritten digits, it wouldn't be too difficult to modify it to solve other problems well suited to neural networks.  
 
