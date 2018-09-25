@@ -34,13 +34,17 @@ To help with efficiency, the network samples the error of a "mini-batch" of exam
 The integer epochs tells the model how many times you would like it to go through the entire data set. After each epoch, the performance of the model will be printed to the console. Each epoch can take a little while, and it takes about 10 to get about 90% accuracy on the mnist train data set.
   
 ## Performance
-
+While this network is certainly not state of the art, it is remarkable how well basic neural networks like this one do on these image recongnition problems.  
+<img src="https://github.com/awalker88/nn-basic/blob/master/imgaes/netper3.PNG" width="450" height="350" />  
+With a learning rate of 3, a 784 x 16 x 16 x 10 network was able to achieve 90% accuracy after only 8 epochs. After 30 epochs, that acuraccy leveled out around 94%. That such (relatively) simple systems can solve complex tasks like these without explicit instructions continues to amaze me. 
 
 ## Built With
 **NumPy**   
-* for matrices and matrix algebra operations  
+* for matrices and matrix algebra operations 
+
 **matplotlib**  
 * visualizing data and outputting charts on neural network performance  
+
 **PyCharm**  
 * IDE and debugging  
 
