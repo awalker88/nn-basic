@@ -14,8 +14,10 @@ There are three big parts of the project (four if you include the data set):
 
 **3. main** - brings it together, trains and tests a network on the data
 
-**4. mnistData** - pixel values of images we will be classifying, from http://yann.lecun.com/exdb/mnist/
-
+**4. mnistData** - pixel values of images we will be classifying, from http://yann.lecun.com/exdb/mnist/  
+  
+Sample MNIST data:  
+<img src="https://github.com/awalker88/nn-basic/blob/master/imgaes/mnistexamples_crop-a96896fe8fa3661109fdb86e638b5b9a.jpg" width="500" height="360" />  
 ## Running the Network
 This project requires Python 3, the libraries NumPy and matplotlib, and the mnist data from http://yann.lecun.com/exdb/mnist/. After ensuring the entire project is in the same directory, you only need to run main.py to start training a network with the default settings. Although this was built around the problem of classifying handwritten digits, it wouldn't be too difficult to modify it to solve other problems well suited to neural networks.  
 
@@ -30,7 +32,7 @@ eta is the learning rate that our network will use when applying the gradient de
 **3. mini_batch_sizes**  
 To help with efficiency, the network samples the error of a "mini-batch" of examples before updating the network. This is similar to conducting a poll on voters; a smaller sample size will give quicker and more frequent results, but at the cost of introducing more sampling error. So, a larger value for mini_batch_sizes will make the network converge more slowly, but with the benefit of less fluctuations.  
 
-**4. epochs**
+**4. epochs**  
 The integer epochs tells the model how many times you would like it to go through the entire data set. After each epoch, the performance of the model will be printed to the console. Each epoch can take a little while, and it takes about 10 to get about 90% accuracy on the mnist train data set.
   
 ## Performance
